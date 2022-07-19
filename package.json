@@ -18,7 +18,13 @@
   "homepage": "https://github.com/2012029301/webpackStudy#readme",
   "description": "",
   "dependencies": {
+    "style-loader": "^3.3.1",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0"
+  },
+  "devDependencies": {
+    "css-loader": "^6.7.1",
+    "less": "^4.1.3",
+    "less-loader": "^11.0.0"
   }
 }
