@@ -1,0 +1,24 @@
+{
+  "name": "webpackStudy",
+  "version": "1.0.0",
+  "main": "./src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2012029301/webpackStudy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/2012029301/webpackStudy/issues"
+  },
+  "homepage": "https://github.com/2012029301/webpackStudy#readme",
+  "description": "",
+  "dependencies": {
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0"
+  }
+}
