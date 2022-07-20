@@ -2,13 +2,14 @@ const path = require("path");
 // 引入eslint 插件
 const ESLintPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+
 module.exports = {
   // 入口文件
   entry: "./src/main.js", //相对路径
   // 输出
   output: {
     // 文件的输出路径,当前根目录
-    path: path.resolve(__dirname, "dist"), //绝对路径
+    path: path.resolve(__dirname, "../dist"), //绝对路径
     filename: "static/js/main.js",
     // 清空上一次打包的
     clean: true,
@@ -68,19 +69,15 @@ module.exports = {
     // 插件的配置
     new ESLintPlugin({
       // 监测有那些文件
-      context: path.resolve(__dirname, "src"),
+      context: path.resolve(__dirname, "../src"),
     }),
     new HtmlWebpackPlugin({
-      // 模板,以./src/public/index.html为模板创建新的html文件
+      // 模板,以/public/index.html为模板创建新的html文件
       // 新的html文件的特点：1结构和原来的一致，自动引入打包输出的资源
-      template: path.resolve(__dirname, "./public/index.html"),
+      template: path.resolve(__dirname, "../public/index.html"),
     }),
   ],
-  devServer: {
-    host: "localhost",
-    port: "3000",
-    open: true,
-  },
+
   //   模式
-  mode: "development",
+  mode: "production",
 };
