@@ -5,8 +5,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "webpack serve --config ./config/webpack.dev.js",
-    "build": "webpack n  --config ./config/webpack.prod.js"
-
+    "build": "webpack --config ./config/webpack.prod.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +20,8 @@
   "homepage": "https://github.com/2012029301/webpackStudy#readme",
   "description": "",
   "dependencies": {
+    "css-minimizer-webpack-plugin": "^4.0.0",
+    "mini-css-extract-plugin": "^2.6.1",
     "style-loader": "^3.3.1",
     "webpack-cli": "^4.10.0"
   },
