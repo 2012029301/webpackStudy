@@ -1,4 +1,5 @@
 .wrap{
-    height: 100VH;
+    display: flex;
+    height: 10000VH;
     background: url('../asset//img/card4.f16fd49f.png');
 }
