@@ -9,6 +9,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
 const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+// 浏览器空闲时间可以预加载资源，提高用户体验
+const PreloadWebpackPlugin = require("@vue/preload-webpack-plugin");
+const WorkboxPlugin = require("workbox-webpack-plugin");
 
 // 获取cpu 核数 ，开启多进程打包，对比较大的项目可以加速打包速度
 const threads = os.cpus().length;
@@ -38,11 +41,14 @@ module.exports = {
   output: {
     // 文件的输出路径,当前根目录
     path: path.resolve(__dirname, "../dist"), //绝对路径
-    filename: "static/js/main.js",
+    // 入口打包输出文件名
+    filename: "static/js/[name].[contenthash:12].js",
+    // 打包输出的其他文件名
+    chunkFilename: "static/js/[name].chunk.[contenthash:10].js",
+    // 图片，字体等通过type:asset处理资源命名方式
+    assetModuleFilename: "static/media/[hash:10][ext][query]",
     // 清空上一次打包的
     clean: true,
-
-    // assetModuleFilename: "images/[hash][ext][query]",
   },
   //   加载器
   module: {
@@ -67,17 +73,10 @@ module.exports = {
                 maxSize: 10 * 1024, // 10kb 小于10k 转成bas64 不过体积会大一点
               },
             },
-            generator: {
-              filename: "static/[hash:10][ext][query]",
-            },
           },
           {
             test: /\.(ttf|woff2?|mp3|mp4|avi)$/,
             type: "asset/resource",
-
-            generator: {
-              filename: "static/media/[hash:10][ext][query]",
-            },
           },
           {
             test: /\.js$/,
@@ -125,50 +124,65 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       // 把所有样式打包到这目录下，这个插件可以避免闪屏
-      filename: "static/css/main.css",
+      filename: "static/css/[name].[contenthash:10].css",
+      chunkFilename: "static/css/[name].chunk.[contenthash:10].css",
     }),
-    // 压缩css
-    // new CssMinimizerPlugin(),
-    // new TerserWebpackPlugin({
-    //   parallel: threads, //开启多线程
-    // }),
+    new PreloadWebpackPlugin({
+      rel: "preload",
+      as: "script",
+    }),
+    new WorkboxPlugin.GenerateSW({
+      // 这些选项帮助快速启用 ServiceWorkers
+      // 不允许遗留任何“旧的” ServiceWorkers
+      clientsClaim: true,
+      skipWaiting: true,
+    }),
   ],
   optimization: {
+    // 压缩操作
     minimizer: [
       new CssMinimizerPlugin(),
       new TerserWebpackPlugin({
         parallel: threads, //开启多线程
       }),
       // 通过插件压缩图片，不过打包时间从3秒变成40秒
-      new ImageMinimizerPlugin({
-        minimizer: {
-          implementation: ImageMinimizerPlugin.imageminGenerate,
-          options: {
-            plugins: [
-              ["gifsicle", { interlaced: true }],
-              ["jpegtran", { progressive: true }],
-              ["optipng", { optimizationLevel: 5 }],
-              // Svgo configuration here https://github.com/svg/svgo#configuration
-              [
-                "svgo",
-                {
-                  plugins: [
-                    "preset-default",
-                    "prefixIds",
-                    {
-                      name: "sortAttrs",
-                      params: {
-                        xmlnsOrder: "alphabetical",
-                      },
-                    },
-                  ],
-                },
-              ],
-            ],
-          },
-        },
-      }),
+      // new ImageMinimizerPlugin({
+      //   minimizer: {
+      //     implementation: ImageMinimizerPlugin.imageminGenerate,
+      //     options: {
+      //       plugins: [
+      //         ["gifsicle", { interlaced: true }],
+      //         ["jpegtran", { progressive: true }],
+      //         ["optipng", { optimizationLevel: 5 }],
+      //         // Svgo configuration here https://github.com/svg/svgo#configuration
+      //         [
+      //           "svgo",
+      //           {
+      //             plugins: [
+      //               "preset-default",
+      //               "prefixIds",
+      //               {
+      //                 name: "sortAttrs",
+      //                 params: {
+      //                   xmlnsOrder: "alphabetical",
+      //                 },
+      //               },
+      //             ],
+      //           },
+      //         ],
+      //       ],
+      //     },
+      //   },
+      // }),
     ],
+    // 代码分割配置，可以提高加载速度
+    splitChunks: {
+      chunks: "all",
+    },
+    //
+    runtimeChunk: {
+      name: (entrypoint) => `runtime~${entrypoint.name}.js`,
+    },
   },
   //   模式
   mode: "production",
